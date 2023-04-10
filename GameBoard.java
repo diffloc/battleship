@@ -61,21 +61,27 @@ public class GameBoard {
                     endCol = tempCol;
                 }
 
+
                 if ((startCol == endCol && (endRow - startRow + 1 != ship.getSize()))
                         || (startRow == endRow && (endCol - startCol + 1 != ship.getSize()))) {
-                    System.out.printf("\nError! Wrong length of the %s! Try again:", ship.getName());
+                    System.out.printf("\nError: Wrong length of the %s! Try again:\n", ship.getName());
                     continue;
                 }
 
-                // if (startRow == endRow && (endCol - startCol + 1 != ship.getSize())) {
-                //     System.out.println("Wrong size");
+                if (startCol != endCol && startRow != endRow) {
+                    System.out.println("startCol = " + startCol);
+                    System.out.println("endCol = " + endCol);
+                    System.out.println("startRow = " + startRow);
+                    System.out.println("endRow = " + endRow);
+                    System.out.println("Error! Can't place ship diagonally. Try again:");
+                    continue;
+                }
+
+
+                // if (isDiagonal(startRow, endRow, startCol, endCol)) {
+                //     System.out.println("Error: Can't place ship diagonally");
                 //     continue;
                 // }
-
-                if (isDiagonal(startRow, endRow, startCol, endCol)) {
-                    System.out.println("Error! Wrong ship location! Try again:");
-                    continue;
-                }
 
                 // Determine position of ship
                 int size = ship.getSize();
@@ -89,36 +95,35 @@ public class GameBoard {
                 for (int i = 0; i < size; i++) {
                     if (isOutOfBounds(row, col)
                             || isOccupied(row, col)
-                            // || isAdjacent(row, col)
+                            || isAdjacent(row, col)
                     ) {
                         valid = false;
+                        System.out.println("Valid = false");
                         break;
                     }
-                    setValue(row, col);
                     row += rowStep;
                     col += colStep;
                 }
 
                 if (valid) {
+                    row = startRow;
+                    col = startCol;
+                    for (int i = 0; i < size; i++) {
+
+                        setValue(row, col);
+                        row += rowStep;
+                        col += colStep;
+                    }
                     placed = true;
                     printBoard();
-                } else {
-                    System.out.println("Invalid placement.");
-
                 }
-
-                // break;
             }
-
-
-
         }
-
     }
 
     public  boolean isOutOfBounds(int row, int col) {
         if (row < 0 || row >= NUM_ROWS || col < 0 || col >= NUM_COLS) {
-            System.out.println("Out of bounds");
+            System.out.println("Error! Out of bounds. Try again:");
             return true;
         }
         return false;
@@ -126,7 +131,7 @@ public class GameBoard {
 
     public boolean isOccupied(int row, int col) {
         if (gameBoard[row][col] != '~') {
-            System.out.println("Occupied!");
+            System.out.println("Error! Ships already at that location. Try again:");
             return true;
         }
         return false;
@@ -136,8 +141,8 @@ public class GameBoard {
         // Check all adjacent cells (including diagonal ones)
         for (int i = row - 1; i <= row + 1; i++) {
             for (int j = col - 1; j <= col + 1; j++) {
-                if (i >= 0 && i < NUM_ROWS && j >= 0 && j < NUM_COLS && gameBoard[i][j] != '~') {
-                    System.out.println("Adjacent");
+                if (i >= 0 && i < NUM_ROWS && j >= 0 && j < NUM_COLS && gameBoard[i][j] == 'O') {
+                    System.out.println("Error! You placed it too close to another one. Try again:");
                     return true;
                 }
             }
@@ -150,9 +155,14 @@ public class GameBoard {
     }
 
     public boolean isDiagonal(int startRow, int endRow, int startCol, int endCol) {
-        int rowDiff = Math.abs(startRow - endRow);
-        int colDiff = Math.abs(startCol - endCol);
-        return rowDiff == colDiff;
+        // B2 C4
+        int rowDiff = Math.abs(startRow - endRow); // 2 - 4 = 2
+        int colDiff = Math.abs(startCol - endCol); // 5 - 6 = -1 = 1 // 1 - 1 = 0
+        if (rowDiff == colDiff) {
+            System.out.println("Error: Diagonal");
+            return true;
+        }
+        return false;
     }
 
 }
