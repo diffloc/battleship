@@ -41,7 +41,7 @@ public class GameBoard {
             boolean placed = false;
             while (!placed) {
                 String shipCoordinates = ui.promptsCoordinates(ship.getName(), ship.getSize());
-                // System.out.println(ship.getName() + " is at " + shipCoordinates);
+
 
                 // Parse coordinate to indices
                 String[] parts = shipCoordinates.split(" ");
@@ -60,6 +60,17 @@ public class GameBoard {
                     startCol = endCol;
                     endCol = tempCol;
                 }
+
+                if ((startCol == endCol && (endRow - startRow + 1 != ship.getSize()))
+                        || (startRow == endRow && (endCol - startCol + 1 != ship.getSize()))) {
+                    System.out.printf("\nError! Wrong length of the %s! Try again:", ship.getName());
+                    continue;
+                }
+
+                // if (startRow == endRow && (endCol - startCol + 1 != ship.getSize())) {
+                //     System.out.println("Wrong size");
+                //     continue;
+                // }
 
                 if (isDiagonal(startRow, endRow, startCol, endCol)) {
                     System.out.println("Error! Wrong ship location! Try again:");
