@@ -33,66 +33,67 @@ public class GameBoard {
         }
     }
 
-    public void placeShips(UserInterface ui) {
+    public void placeShips(UserInterface ui)  {
         for (Ship ship : Ship.values()) {
             boolean placed = false;
             while (!placed) {
-                String shipCoordinates = ui.promptsCoordinates(ship.getName(), ship.getSize());
-                String[] parts = shipCoordinates.split(" ");
-                int startRow = parts[0].charAt(0) - 'A';
-                int startCol = Integer.parseInt(parts[0].substring(1)) -1;
-                int endRow = parts[1].charAt(0) - 'A';
-                int endCol = Integer.parseInt(parts[1].substring(1)) - 1;
-                if (startCol == endCol && endRow < startRow) {
-                    int tempRow = startRow;
-                    startRow = endRow;
-                    endRow = tempRow;
-                } else if (startRow == endRow && endCol < startCol) {
-                    int tempCol = startCol;
-                    startCol = endCol;
-                    endCol = tempCol;
-                }
-                if ((startCol == endCol && (endRow - startRow + 1 != ship.getSize()))
-                        || (startRow == endRow && (endCol - startCol + 1 != ship.getSize()))) {
-                    System.out.printf("\nError: Wrong length of the %s! Try again:\n", ship.getName());
-                    continue;
-                }
-                if (startCol != endCol && startRow != endRow) {
-                    System.out.println("startCol = " + startCol);
-                    System.out.println("endCol = " + endCol);
-                    System.out.println("startRow = " + startRow);
-                    System.out.println("endRow = " + endRow);
-                    System.out.println("Error! Can't place ship diagonally. Try again:");
-                    continue;
-                }
-                int size = ship.getSize();
-                int row = startRow;
-                int col = startCol;
-                int rowStep = startCol == endCol ? 1 : 0;
-                int colStep = startRow == endRow ? 1 : 0;
-                boolean valid = true;
-                for (int i = 0; i < size; i++) {
-                    if (isOutOfBounds(row, col)
-                            || isOccupied(row, col)
-                            || isAdjacent(row, col)
-                    ) {
-                        valid = false;
-                        System.out.println("Valid = false");
-                        break;
+                String shipCoordinates = null;
+                try {
+                    shipCoordinates = ui.promptShipCoordinates(ship.getName(), ship.getSize());
+                    assert shipCoordinates != null;
+                    String[] parts = shipCoordinates.split(" ");
+                    int startRow = parts[0].charAt(0) - 'A';
+                    int startCol = Integer.parseInt(parts[0].substring(1)) -1;
+                    int endRow = parts[1].charAt(0) - 'A';
+                    int endCol = Integer.parseInt(parts[1].substring(1)) - 1;
+                    if (startCol == endCol && endRow < startRow) {
+                        int tempRow = startRow;
+                        startRow = endRow;
+                        endRow = tempRow;
+                    } else if (startRow == endRow && endCol < startCol) {
+                        int tempCol = startCol;
+                        startCol = endCol;
+                        endCol = tempCol;
                     }
-                    row += rowStep;
-                    col += colStep;
-                }
-                if (valid) {
-                    row = startRow;
-                    col = startCol;
+                    if ((startCol == endCol && (endRow - startRow + 1 != ship.getSize()))
+                            || (startRow == endRow && (endCol - startCol + 1 != ship.getSize()))) {
+                        System.out.printf("\nError: Wrong length of the %s! Try again:\n", ship.getName());
+                        continue;
+                    }
+                    if (startCol != endCol && startRow != endRow) {
+                        System.out.println("Error! Can't place ship diagonally. Try again:");
+                        continue;
+                    }
+                    int size = ship.getSize();
+                    int row = startRow;
+                    int col = startCol;
+                    int rowStep = startCol == endCol ? 1 : 0;
+                    int colStep = startRow == endRow ? 1 : 0;
+                    boolean valid = true;
                     for (int i = 0; i < size; i++) {
-                        setValue(row, col);
+                        if (isOutOfBounds(row, col)
+                                || isOccupied(row, col)
+                                || isAdjacent(row, col)
+                        ) {
+                            valid = false;
+                            break;
+                        }
                         row += rowStep;
                         col += colStep;
                     }
-                    placed = true;
-                    printBoard();
+                    if (valid) {
+                        row = startRow;
+                        col = startCol;
+                        for (int i = 0; i < size; i++) {
+                            setValue(row, col);
+                            row += rowStep;
+                            col += colStep;
+                        }
+                        placed = true;
+                        printBoard();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("INVALID INPUT");
                 }
             }
         }
@@ -115,7 +116,6 @@ public class GameBoard {
     }
 
     public boolean isAdjacent(int row, int col) {
-        // Check all adjacent cells (including diagonal ones)
         for (int i = row - 1; i <= row + 1; i++) {
             for (int j = col - 1; j <= col + 1; j++) {
                 if (i >= 0 && i < NUM_ROWS && j >= 0 && j < NUM_COLS && gameBoard[i][j] == 'O') {
@@ -127,7 +127,56 @@ public class GameBoard {
         return false;
     }
 
+    public int getNUM_ROWS() {
+        return this.NUM_ROWS;
+    }
+
+    public int getNUM_COLS() {
+        return NUM_COLS;
+    }
+
+    public char getCell(int row, int col) {
+        return gameBoard[row][col];
+    }
+
+    public void setCell(int row, int col, char ch) {
+        gameBoard[row][col] = ch;
+    }
+
     public void setValue(int row, int col) {
         gameBoard[row][col] = 'O';
+    }
+
+    public void testBoard() {
+        // Set an Aircraft Carrier (5 cells) horizontally starting at F3
+        int row = 5;
+        int col = 2;
+        for (int i = 0; i < 5; i++) {
+            gameBoard[row][col+i] = 'O';
+        }
+        // Set a Battleship (4 cells) vertically starting at A1
+        row = 0;
+        col = 0;
+        for (int i = 0; i < 4; i++) {
+            gameBoard[row+i][col] = 'O';
+        }
+        // Set a Submarine (3 cells) horizontally starting at J8
+        row = 9;
+        col = 7;
+        for (int i = 0; i < 3; i++) {
+            gameBoard[row][col+i] = 'O';
+        }
+        // Set a Cruiser (3 cells) vertically starting at B9
+        row = 1;
+        col = 8;
+        for (int i = 0; i < 3; i++) {
+            gameBoard[row+i][col] = 'O';
+        }
+        // Set a Destroyer (2 cells) vertically starting at I2
+        row = 8;
+        col = 1;
+        for (int i = 0; i < 2; i++) {
+            gameBoard[row+i][col] = 'O';
+        }
     }
 }
