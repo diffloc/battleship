@@ -2,9 +2,11 @@ package battleship;
 
 public class GameLogic {
 
-    private GameBoard gameBoard;
+    private final GameBoard gameBoard;
+
     public GameLogic(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
+
     }
 
     public void playGame(UserInterface ui) {
@@ -16,10 +18,44 @@ public class GameLogic {
             if (isOutOfBounds(row, col)) {
                 continue;
             }
-            if (gameBoard.getCell(row, col) == 'O') {
+            boolean hit = false;
+            boolean sunk = false;
+
+            for (Ship ship : gameBoard.getShips()) {
+                for (int[] coordinate : ship.getCoordinates()) {
+                    if (coordinate[0] == row && coordinate[1] == col) {
+                        hit = true;
+                        ship.hit();
+                        if (ship.isSunk(gameBoard)) {
+                            sunk = true;
+                        }
+                        break;
+                    }
+                }
+                if (hit) {
+                    break;
+                }
+            }
+            if (hit) {
                 gameBoard.setCell(row, col, 'X');
                 gameBoard.printFogOfWarBoard();
-                System.out.println("\nYou hit a ship!\n");
+                boolean allSunk = true;
+                for (Ship ship : gameBoard.getShips()) {
+                    if (!ship.isSunk(gameBoard)) {
+                        allSunk = false;
+                        break;
+                    }
+                }
+                if (allSunk) {
+                    System.out.println("You sank the last ship. You won. Congratulations!");
+                    break;
+                }
+                if (sunk) {
+                    System.out.println("\nYou sank a ship! Specify a new target:\n");
+                } else {
+                    System.out.println("\nYou hit a ship!\n");
+                }
+
                 gameBoard.printBoard();
             } else {
                 gameBoard.setCell(row, col, 'M');

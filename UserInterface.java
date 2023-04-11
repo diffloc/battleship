@@ -12,7 +12,6 @@ public class UserInterface {
 
     public void startGame() {
         GameBoard gameBoard = new GameBoard();
-        // gameBoard.testBoard();
         GameLogic gameLogic = new GameLogic(gameBoard);
         gameBoard.printBoard();
         gameBoard.placeShips(this);
