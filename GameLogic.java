@@ -18,12 +18,14 @@ public class GameLogic {
             }
             if (gameBoard.getCell(row, col) == 'O') {
                 gameBoard.setCell(row, col, 'X');
+                gameBoard.printFogOfWarBoard();
+                System.out.println("\nYou hit a ship!\n");
                 gameBoard.printBoard();
-                System.out.println("\nYou hit a ship!");
             } else {
                 gameBoard.setCell(row, col, 'M');
+                gameBoard.printFogOfWarBoard();
+                System.out.println("\nYou missed!\n");
                 gameBoard.printBoard();
-                System.out.println("\nYou missed!");
             }
         }
     }

@@ -17,7 +17,7 @@ public class UserInterface {
         gameBoard.printBoard();
         gameBoard.placeShips(this);
         System.out.println("\nThe game starts!\n");
-        gameBoard.printBoard();
+        gameBoard.printFogOfWarBoard();
         gameLogic.playGame(this);
 
     }

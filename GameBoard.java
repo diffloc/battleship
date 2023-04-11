@@ -33,6 +33,20 @@ public class GameBoard {
         }
     }
 
+    public void printFogOfWarBoard() {
+        for (int j = 1; j <= gameBoard[0].length; j++) {
+            System.out.print(j == 1 ? "  " + j + " " : j + " ");
+        }
+        System.out.println();
+        for (int i = 0; i < gameBoard.length; i++) {
+            System.out.print((char) ('A' + i) + " ");
+            for (int j = 0; j < gameBoard[i].length;  j++) {
+                System.out.print(gameBoard[i][j] == 'O' ? '~' + " " : gameBoard[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
     public void placeShips(UserInterface ui)  {
         for (Ship ship : Ship.values()) {
             boolean placed = false;
