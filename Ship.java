@@ -1,34 +1,17 @@
 package battleship;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public enum Ship {
-
-    CARRIER("Aircraft Carrier", 5),
-    BATTLESHIP("Battleship", 4),
-    SUBMARINE("Submarine", 3),
-    CRUISER("Cruiser", 3),
-    DESTROYER("Destroyer", 2);
+public class Ship {
 
     private final String name;
     private final int size;
-    private final List<int[]> coordinates;
     private int remaining;
+    private boolean sunk;
 
-    Ship(String name, int size) {
+    public Ship(String name, int size) {
         this.name = name;
         this.size = size;
         this.remaining = size;
-        this.coordinates = new ArrayList<>();
-    }
-
-    public void addCoords(int row, int col) {
-        this.coordinates.add(new int[]{row, col});
-    }
-
-    public List<int[]> getCoordinates() {
-        return this.coordinates;
+        this.sunk = false;
     }
 
     public String getName() {
@@ -42,16 +25,19 @@ public enum Ship {
     public void hit() {
         this.remaining--;
         if (this.remaining == 0) {
-            System.out.println("Ship " + this.getName() + " sunk!");
+            // System.out.println("Ship " + this.getName() + " sunk!");
+            System.out.println("\nYou sank a ship!");
+            this.sunk = true;
+        } else {
+            System.out.println("\nYou hit a ship!");
         }
+
+
+
+
     }
 
-    public boolean isSunk(GameBoard gameBoard) {
-        for (int[] coordinate : this.coordinates) {
-            if (gameBoard.gameBoard[coordinate[0]][coordinate[1]] != 'X') {
-                return false;
-            }
-        }
-        return true;
+    public boolean isSunk() {
+        return this.sunk;
     }
 }
